@@ -12,12 +12,12 @@
 //PID
 //#include <PID_v1.h>
 
-//HZ Counter
+//Hz Counter
 const uint8_t frqpin = 5; // digital pin #5
 const uint32_t oneSecond = 1000;
 uint32_t timer = 0;
 uint32_t sts = 0;
-const uint32_t c = 2; // wait for 50 pulses
+const uint32_t c = 2; // wait for 2 pulses, due to possible low flow system can exceed 1 second updates waiting for pulses.  Higher numbers can give better resolution.
 uint32_t ets = 0;
 
 //Display definitions
@@ -56,7 +56,7 @@ Adafruit_ILI9340 tft = Adafruit_ILI9340(_cs, _dc, _rst);
 #define BCOEFFICIENT1 4950 //Water sensor
 #define BCOEFFICIENT2 3950 //Ambient sensor
 
-// the value of the 'other' resistor A0 - A4
+// the value of the 'other' resistor A0 - A4.  Measured with a high quality multimeter.  This is not nessisary but gives best accuracy.  Default is 10000.
 #define SERIESRESISTOR1 9925 
 #define SERIESRESISTOR2 9863
 #define SERIESRESISTOR3 9881
@@ -80,7 +80,7 @@ int watts3 = 0;
 float steinhart5;
 float flow = 0; 
 int radmax = 300; //Turn text red if heat rejected is above this number.
-int gpumax = 200;
+int gpumax = 200; //Same for GPU
 
 void setup(void) {
 
@@ -89,9 +89,11 @@ pinMode(frqpin, INPUT);
 
   
 //analogReference(EXTERNAL); not used on this hardware rev, reference is 5v supply from arduino
+//start display
   tft.begin();
   tft.fillScreen(ILI9340_BLACK); //Clearing the display at start
   tft.setRotation(0);
+  
 //This is the update once at reset diplay print.  This keeps the display from refreshing static data and makes the refresh much more responsive.
 
 // Headings
@@ -162,10 +164,6 @@ pulseIn(frqpin,LOW);
   for (uint32_t i=c; i>0; i--)
    pulseIn(frqpin,HIGH);
  ets = micros(); // end time stamp
- //Serial.print("$");
- //Serial.print((c*1e6/(ets-sts))); // output Hz
- 
-
 
   //define average numbers
   uint8_t i;
@@ -174,6 +172,7 @@ pulseIn(frqpin,LOW);
   float average3;
   float average4;
   float average5;
+  
   // take N samples in a row, with a slight delay
   for (i = 0; i < NUMSAMPLES; i++) {
     samples1[i] = analogRead(RADIN);
