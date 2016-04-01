@@ -83,16 +83,17 @@ int radmax = 300; //Turn text red if heat rejected is above this number.
 int gpumax = 200;
 
 void setup(void) {
-Serial.begin(9600);
 
 //Flow meter pins
 pinMode(frqpin, INPUT);
 
   
-  //analogReference(EXTERNAL); not used on this hardware rev, reference is 5v supply from arduino
+//analogReference(EXTERNAL); not used on this hardware rev, reference is 5v supply from arduino
   tft.begin();
   tft.fillScreen(ILI9340_BLACK); //Clearing the display at start
   tft.setRotation(0);
+//This is the update once at reset diplay print.  This keeps the display from refreshing static data and makes the refresh much more responsive.
+
 // Headings
   tft.setTextColor(ILI9340_BLACK, ILI9340_BLUE);  tft.setTextSize(3);
   tft.setCursor(0, 17);
@@ -155,7 +156,7 @@ pinMode(frqpin, INPUT);
 }
 
 void loop(void) {
-
+//Pulse counter for flow meter.  Koolance INS-FM19 at 0.307 LPM per pulse with 10mm tubing
 pulseIn(frqpin,LOW);
  sts = micros(); // start time stamp
   for (uint32_t i=c; i>0; i--)
@@ -229,7 +230,6 @@ pulseIn(frqpin,LOW);
   steinhart1f = (steinhart1 * 9.0) / 5.0 + 32.0; // Convert Celcius to Fahrenheit if using F
   
 //Radiator Out
-  
   float steinhart2;
   float steinhart2f;
   steinhart2 = average2 / THERMISTORNOMINAL;     // (R/Ro)
@@ -293,7 +293,6 @@ flow *= .26417; //Convert to GPM
 
 
 //Ambient Temp
-
   float steinhart5f;
   steinhart5 = 0;
   steinhart5 = average5 / THERMISTORNOMINAL;     // (R/Ro)
