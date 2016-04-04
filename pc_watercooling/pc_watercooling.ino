@@ -17,7 +17,7 @@ const uint8_t frqpin = 5; // digital pin #5
 const uint32_t oneSecond = 1000;
 uint32_t timer = 0;
 uint32_t sts = 0;
-const uint32_t c = 2; // wait for 2 pulses, due to possible low flow system can exceed 1 second updates waiting for pulses.  Higher numbers can give better resolution.
+const uint32_t c = 20; // wait for 20 pulses, due to possible low flow, system will wait until the number of pusles before temp updates.  Higher numbers can give better accuracy but at longer update interval.
 uint32_t ets = 0;
 
 //Display definitions
@@ -375,6 +375,6 @@ flow *= .26417; //Convert to GPM
     tft.print (delta4);
   }
 
-  delay(900);
+//  delay(900);  Delay is not needed as system will wait for the number of pulses of the flowmeter.
 }
 
